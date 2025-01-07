@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "403001978354",
+    "firebase_url": "https://to-do-list-239dc-default-rtdb.firebaseio.com",
+    "project_id": "to-do-list-239dc",
+    "storage_bucket": "to-do-list-239dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403001978354:android:44d18d01dce5be62670f6b",
+        "android_client_info": {
+          "package_name": "com.example.todo_list_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGZ4xAEFEkW_8HCwLGpYEhcVOhj2v3Zd8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

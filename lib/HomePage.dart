@@ -4,43 +4,58 @@ import 'package:todo_list_flutter/EditListPage.dart';
 import 'package:todo_list_flutter/HomeController.dart';
 import 'package:todo_list_flutter/models/GetListModel.dart';
 
-import 'models/TodoModel.dart';
-
 class Homepage extends StatelessWidget {
   Homepage({super.key});
   var homeController = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
+    homeController.getList();
+    return Obx(() =>
+        Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.grey[200],
+            centerTitle: true,
+            title: Text("To-Do List",style: TextStyle(fontWeight: FontWeight.bold),),
+          ),
+          body: myBody(),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              homeController.updatedItem.value = GetListModel();
+              Get.to(EditListPage());
+            },
+            shape: CircleBorder(),
+            backgroundColor: Colors.white ,
+            child: Icon(
+              Icons.edit,
+              color: Colors.deepPurpleAccent,
+            ),
+          ),
+        ));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("To-Do List"),
-      ),
-      body: myBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          Get.to(EditListPage());
-        },
-        shape: CircleBorder(),
-        backgroundColor: Colors.purpleAccent[400],
-        child: Icon(
-          Icons.edit,
-          color: Colors.white,
-        ),
-      ),
-    );
   }
 
   Widget myBody() {
-    return ListView.builder(
-        itemCount: homeController.todoList.obs.value.length,
-        itemBuilder: (globalContext, index) {
-          return listView(homeController.todoList.obs.value[index], () {
-            homeController.updatedItem.value = homeController.todoList[index];
-           homeController.updateList();
-           Get.to(EditListPage());
-          });
-        }).paddingSymmetric(horizontal: 10, vertical: 10);
+    return Container(
+      color: Colors.grey[200], // Set your desired background color here
+      child: ListView.builder(
+          itemCount: homeController.todoList.obs.value.length,
+          itemBuilder: (globalContext, index) {
+            var currentItem = homeController.todoList[index];
+            return
+              Dismissible(
+                direction: DismissDirection.startToEnd,
+                onDismissed: (direction){
+                  homeController.deleteItem(currentItem.id);
+                },
+                key: Key(currentItem.id),
+                child: listView(homeController.todoList.obs.value[index], () {
+                homeController.updatedItem.value = homeController.todoList[index];
+                           homeController.updateList();
+                           Get.to(EditListPage());
+                          }),
+              );
+          }).paddingSymmetric(horizontal: 10, vertical: 10),
+    );
   }
 
   Widget listView(GetListModel getListModel, GestureTapCallback onTap) {
@@ -48,8 +63,8 @@ class Homepage extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Card(
-        color: Colors.deepPurpleAccent,
-        elevation: 10,
+        color: Colors.deepPurpleAccent ,
+        elevation: 4,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

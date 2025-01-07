@@ -30,84 +30,91 @@ class EditListPage extends StatelessWidget {
     titleController.text = homeController.updatedItem.value.title ?? "";
     descriptionController.text =
         homeController.updatedItem.value.description ?? "";
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Task'),
-      ),
-      body: myBody(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (homeController.updatedItem.value.id != null) {
-            homeController.updatedItem.value.date = selectedDateValue.value;
-            homeController.updatedItem.value.description =
-                descriptionController.text;
-            homeController.updatedItem.value.title = titleController.text;
-            homeController.updateList();
-            Get.to(Homepage());
-          } else {
-            homeController.createToDoItem(TodoModel(
-                title: titleController.text,
-                description: descriptionController.text,
-                date: selectedDateValue.value));
-            Get.to(Homepage());
-          }
-        },
-        shape: CircleBorder(),
-        backgroundColor: Colors.purpleAccent[400],
-        child: Icon(
-          Icons.save,
-          color: Colors.white,
-        ),
-      ),
-    );
+    return Obx(() =>
+        Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.grey[200],
+            centerTitle: true,
+            title: Text('Edit Task',style: TextStyle(fontWeight: FontWeight.bold),),
+          ),
+          body: myBody(context),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              if (homeController.updatedItem.value.id != null) {
+                homeController.updatedItem.value.date = selectedDateValue.value;
+                homeController.updatedItem.value.description =
+                    descriptionController.text;
+                homeController.updatedItem.value.title = titleController.text;
+                homeController.updateList();
+              } else {
+                homeController.createToDoItem(TodoModel(
+                    title: titleController.text,
+                    description: descriptionController.text,
+                    date: selectedDateValue.value));
+              }
+              Get.back();
+            },
+            shape: CircleBorder(),
+            backgroundColor: Colors.black,
+            child: Icon(
+              Icons.save,
+              color: Colors.purpleAccent[400],
+            ),
+          ),
+        ),);
   }
 
   Widget myBody(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: () async {
-              DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate.value,
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime(2200));
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        color: Colors.grey[200],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () async {
+                DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate.value,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2200));
 
-              if (picked != null && picked != selectedDate.value) {
-                selectedDate.value = picked;
-                selectedDateValue.value =
-                    DateFormat("dd/MM/yyyy").format(selectedDate.value);
-              }
-            },
-            child: Row(children: [
-              Icon(Icons.calendar_month),
-              SizedBox(
-                width: 10,
+                if (picked != null && picked != selectedDate.value) {
+                  selectedDate.value = picked;
+                  selectedDateValue.value =
+                      DateFormat("dd/MM/yyyy").format(selectedDate.value);
+                }
+                print(selectedDateValue.value);
+              },
+              child: Row(children: [
+                Icon(Icons.calendar_month,color: Colors.purpleAccent[400],),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(selectedDateValue.value,
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))
+              ]),
+            ),
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                hintText: "Title",
               ),
-              Text(selectedDateValue.value,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))
-            ]),
-          ),
-          TextField(
-            controller: titleController,
-            decoration: InputDecoration(
-              hintText: "Title",
+              maxLines: 1,
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
-            maxLines: 1,
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-          TextField(
-            controller: descriptionController,
-            decoration: InputDecoration(hintText: "Description"),
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          )
-        ],
-      ).paddingSymmetric(horizontal: 15),
+            TextField(
+              controller: descriptionController,
+              decoration: InputDecoration(hintText: "Description"),
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            )
+          ],
+        ).paddingSymmetric(horizontal: 15),
+      ),
     );
   }
 }

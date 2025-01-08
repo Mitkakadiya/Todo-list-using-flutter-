@@ -30,38 +30,47 @@ class EditListPage extends StatelessWidget {
     titleController.text = homeController.updatedItem.value.title ?? "";
     descriptionController.text =
         homeController.updatedItem.value.description ?? "";
-    return Obx(() =>
-        Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.grey[200],
-            centerTitle: true,
-            title: Text('Edit Task',style: TextStyle(fontWeight: FontWeight.bold),),
+    return Obx(
+      () => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.grey[200],
+          centerTitle: true,
+          title: Text(
+            'Edit Task',
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          body: myBody(context),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              if (homeController.updatedItem.value.id != null) {
-                homeController.updatedItem.value.date = selectedDateValue.value;
-                homeController.updatedItem.value.description =
-                    descriptionController.text;
-                homeController.updatedItem.value.title = titleController.text;
-                homeController.updateList();
-              } else {
-                homeController.createToDoItem(TodoModel(
-                    title: titleController.text,
-                    description: descriptionController.text,
-                    date: selectedDateValue.value));
-              }
-              Get.back();
-            },
-            shape: CircleBorder(),
-            backgroundColor: Colors.black,
-            child: Icon(
-              Icons.save,
-              color: Colors.purpleAccent[400],
-            ),
+        ),
+        body: myBody(context),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (homeController.updatedItem.value.id != null) {
+              homeController.updatedItem.value.date = selectedDateValue.value;
+              homeController.updatedItem.value.description =
+                  descriptionController.text;
+              homeController.updatedItem.value.title = titleController.text;
+              homeController.updateList(callBack: () {
+                Get.back(closeOverlays: true);
+              });
+            } else {
+              homeController.createToDoItem(
+                  todoModel: TodoModel(
+                      title: titleController.text,
+                      description: descriptionController.text,
+                      date: selectedDateValue.value),
+                  callBack: () {
+                    Get.back(closeOverlays: true);
+                  });
+            }
+          },
+          shape: CircleBorder(),
+          backgroundColor: Colors.black,
+          child: Icon(
+            Icons.save,
+            color: Colors.purpleAccent[400],
           ),
-        ),);
+        ),
+      ),
+    );
   }
 
   Widget myBody(BuildContext context) {
@@ -89,7 +98,10 @@ class EditListPage extends StatelessWidget {
                 print(selectedDateValue.value);
               },
               child: Row(children: [
-                Icon(Icons.calendar_month,color: Colors.purpleAccent[400],),
+                Icon(
+                  Icons.calendar_month,
+                  color: Colors.purpleAccent[400],
+                ),
                 SizedBox(
                   width: 10,
                 ),

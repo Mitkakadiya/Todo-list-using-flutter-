@@ -16,10 +16,13 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
-  void createToDoItem(TodoModel todoModel) {
-    showSnackBar(title: "Success", message: "Data Created Successfully");
-    toDoItem.add(todoModel.toMap());
-
+  void createToDoItem({required TodoModel todoModel,Function? callBack}) {
+    toDoItem.add(todoModel.toMap()).then((value) {
+      if(callBack != null ){
+        callBack();
+      }
+      showSnackBar(title: "Success", message: "Data Created Successfully");
+    },);
   }
 
   void getList() async {
@@ -34,18 +37,32 @@ class HomeController extends GetxController {
     print(todoList);
   }
 
-  void updateList() {
-    toDoItem.doc(updatedItem.value.id).update(TodoModel(
-            title: updatedItem.value.title ?? "",
-            description: updatedItem.value.description ?? "",
-            date: updatedItem.value.date ?? "")
-        .toMap());
-    showSnackBar(title: "Success", message: "Data Updated Successfully");
+  void updateList({Function? callBack}) async {
+    await toDoItem
+        .doc(updatedItem.value.id)
+        .update(TodoModel(
+                title: updatedItem.value.title ?? "",
+                description: updatedItem.value.description ?? "",
+                date: updatedItem.value.date ?? "")
+            .toMap())
+        .then(
+      (value) {
+        if (callBack != null) {
+          callBack();
+        }
+        showSnackBar(title: "Success", message: "Data Updated Successfully");
+      },
+    );
   }
 
-  void deleteItem(String id){
-    showSnackBar(title: "Success", message: "Data Deleted Successfully");
-    toDoItem.doc(id).delete();
-
+  void deleteItem({required String id, Function? callBack}) async {
+    await toDoItem.doc(id).delete().then(
+      (value) {
+        if (callBack != null) {
+          callBack();
+        }
+        showSnackBar(title: "Success", message: "Data Deleted Successfully");
+      },
+    );
   }
 }

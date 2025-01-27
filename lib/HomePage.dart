@@ -24,8 +24,7 @@ class Homepage extends StatelessWidget {
           body: myBody(),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              homeController.updatedItem.value = GetListModel();
-              Get.to(() =>EditListPage());
+                Get.to(() =>EditListPage());
             },
             shape: CircleBorder(),
             backgroundColor: Colors.white,
@@ -54,7 +53,7 @@ class Homepage extends StatelessWidget {
                   listView(homeController.todoList.obs.value[index], () async {
                 homeController.updatedItem.value =
                     homeController.todoList[index];
-                Get.to(() =>EditListPage());
+                Get.to(() =>EditListPage(),arguments: homeController.updatedItem.value);
               }),
             );
           }).paddingSymmetric(horizontal: 10, vertical: 10),

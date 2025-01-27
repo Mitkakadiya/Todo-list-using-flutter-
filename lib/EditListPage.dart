@@ -1,37 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_list_flutter/EditListController.dart';
+import 'package:todo_list_flutter/models/GetListModel.dart';
 import 'package:todo_list_flutter/models/TodoModel.dart';
 
-import 'HomeController.dart';
-import 'HomePage.dart';
-
 class EditListPage extends StatelessWidget {
-  var titleController = TextEditingController();
-  var descriptionController = TextEditingController();
-  var homeController = Get.put(HomeController());
-
-  Rx<DateTime> selectedDate = DateTime.now().obs;
-  RxString selectedDateValue = "".obs;
-
+  var editController = Get.put(EditListController());
   EditListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    String? modelDate = homeController.updatedItem.value.date;
-    if (modelDate != null && modelDate.isNotEmpty) {
-      selectedDate.value = DateFormat('dd/MM/yyyy').parse(modelDate);
-      selectedDateValue.value = modelDate;
-    } else {
-      // Default to current date
-      selectedDate.value = DateTime.now();
-      selectedDateValue.value = DateFormat("dd/MM/yyyy").format(DateTime.now());
-    }
-    titleController.text = homeController.updatedItem.value.title ?? "";
-    descriptionController.text =
-        homeController.updatedItem.value.description ?? "";
+
     return Obx(
       () => Scaffold(
+        backgroundColor: Colors.grey[200],
         appBar: AppBar(
           backgroundColor: Colors.grey[200],
           centerTitle: true,
@@ -43,20 +26,27 @@ class EditListPage extends StatelessWidget {
         body: myBody(context),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            if (homeController.updatedItem.value.id != null) {
-              homeController.updatedItem.value.date = selectedDateValue.value;
-              homeController.updatedItem.value.description =
-                  descriptionController.text;
-              homeController.updatedItem.value.title = titleController.text;
-              homeController.updateList(callBack: () {
+            if (editController.updatedItem.id != null) {
+              editController.updatedItem.date =
+                  editController.selectedDateValue.value;
+              editController.updatedItem.description =
+                  editController.descriptionController.text;
+              editController.updatedItem.title =
+                  editController.titleController.text;
+                GetListModel updatedItem =  GetListModel(
+                  id: editController.updatedItem.id,
+                  title: editController.titleController.text,
+                  description: editController.descriptionController.text,
+                  date: editController.selectedDateValue.value);
+              editController.updateList(updatedItem: updatedItem ,callBack: () {
                 Get.back(closeOverlays: true);
               });
             } else {
-              homeController.createToDoItem(
+              editController.createToDoItem(
                   todoModel: TodoModel(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      date: selectedDateValue.value),
+                      title: editController.titleController.text,
+                      description: editController.descriptionController.text,
+                      date: editController.selectedDateValue.value),
                   callBack: () {
                     Get.back(closeOverlays: true);
                   });
@@ -76,9 +66,8 @@ class EditListPage extends StatelessWidget {
   Widget myBody(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      child: Container(
+      child: SizedBox(
         height: MediaQuery.of(context).size.height,
-        color: Colors.grey[200],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -86,16 +75,17 @@ class EditListPage extends StatelessWidget {
               onTap: () async {
                 DateTime? picked = await showDatePicker(
                     context: context,
-                    initialDate: selectedDate.value,
+                    initialDate: editController.selectedDate.value,
                     firstDate: DateTime(1900),
                     lastDate: DateTime(2200));
 
-                if (picked != null && picked != selectedDate.value) {
-                  selectedDate.value = picked;
-                  selectedDateValue.value =
-                      DateFormat("dd/MM/yyyy").format(selectedDate.value);
+                if (picked != null &&
+                    picked != editController.selectedDate.value) {
+                  editController.selectedDate.value = picked;
+                  editController.selectedDateValue.value =
+                      DateFormat("dd/MM/yyyy")
+                          .format(editController.selectedDate.value);
                 }
-                print(selectedDateValue.value);
               },
               child: Row(children: [
                 Icon(
@@ -105,20 +95,19 @@ class EditListPage extends StatelessWidget {
                 SizedBox(
                   width: 10,
                 ),
-                Text(selectedDateValue.value,
+                Text(editController.selectedDateValue.value,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))
               ]),
             ),
             TextField(
-              controller: titleController,
+              controller: editController.titleController,
               decoration: InputDecoration(
                 hintText: "Title",
               ),
-              maxLines: 1,
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: descriptionController,
+              controller: editController.descriptionController,
               decoration: InputDecoration(hintText: "Description"),
               style: TextStyle(
                 fontSize: 20,
